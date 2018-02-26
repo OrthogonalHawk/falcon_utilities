@@ -74,8 +74,10 @@ public:
     falcon_arg_parser(void);
     falcon_arg_parser(const char option_val_delimiter);
     virtual ~falcon_arg_parser(void);
-    void parse(int argc, char ** pArgv);
+    void parse(int argc, char ** pArgv, bool exit_on_unsupported_arg);
     void print_usage(void);
+
+    std::string get_program_name(void);
 
     /* explicitly disable these methods */
     falcon_arg_parser(const falcon_arg_parser&) = delete;

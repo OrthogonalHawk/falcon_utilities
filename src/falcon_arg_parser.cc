@@ -107,12 +107,15 @@ falcon_arg_parser::~falcon_arg_parser(void)
  * @brief  Parse provided command-line arguments. Sets object state variables based on provided arguments.
  *
  * @note   Will call 'exit()' with 0 return status code if -h/--help option is detected.
- *         Will call 'exit()' with -1 return status code for invalid and unsupported command lines.
+ *         Will call 'exit()' with -1 return status code for invalid and unsupported command lines (if
+ *          configured to do so).
  *
  * @param  argc Number of arguments (argc from command-line)
  * @param  pArgv Array of arguments (argv from command-line)
+ * @param  exit_on_unsupported_arg Call 'exit()' with -1 return status code if an unsupported
+ *          argument is found.
  */
-void falcon_arg_parser::parse(int argc, char ** pArgv)
+void falcon_arg_parser::parse(int argc, char ** pArgv, bool exit_on_unsupported_arg)
 {
     /* verify that at least one argument is provided */
     if (argc == 0 || pArgv == nullptr)
@@ -142,7 +145,7 @@ void falcon_arg_parser::parse(int argc, char ** pArgv)
             }
             else
             {
-                if (!derived_class_parse(option, value))
+                if (!derived_class_parse(option, value) && exit_on_unsupported_arg)
                 {
                     std::cout << "ERROR: Unsupported option: " << option << std::endl;
 
@@ -172,6 +175,16 @@ void falcon_arg_parser::print_usage(void)
 {
     std::string derived_class_usage = get_derived_class_usage();
     print_usage(derived_class_usage);
+}
+
+/*
+ * @brief  Accessor method for the program name.
+ *
+ * @return Program name after 'parse()' has been called; otherwise empty string.
+ */
+std::string falcon_arg_parser::get_program_name(void)
+{
+    return m_program_name;
 }
 
 /*
